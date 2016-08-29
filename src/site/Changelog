@@ -1,2 +1,4 @@
+v0.6.5 (2016-08-29):
+  * implemented two-way, fully recursive element wrappers
 v0.5 (2016-08-05):
   * first release 

@@ -1,5 +1,5 @@
 /*
-	JWL - The JavaScript Widget Library version 0.5
+	JWL - The JavaScript Widget Library version 0.6.5
 	Copyright (c) 2016 The Zonebuilder (zone.builder@gmx.com)
 	http://sourceforge.net/projects/jwl-library/
 	Licenses: GNU GPL2 or later; GNU LGPLv3 or later (http://sourceforge.net/p/jwl-library/wiki/License/)
@@ -12,7 +12,6 @@
 	onevar: true, newcap: true, noarg: true, node: true, strict: true, trailing: true, undef: true, unused: vars, wsh: true */
 /* globals JUL, JWL: true */
 
-JWL = {};
 (function() {
 'use strict';
 
@@ -21,8 +20,11 @@ JWL = {};
 /**
 	JWL global namespace
 	@namespace	It holds properties and methods used by JWL
+	@name	JWL
 */
-JWL = {
+JUL.ns('JWL');
+
+JUL.apply(JWL, /** @lends JWL */ {
 	/**
 		JWL parser configuration
 		@type	Object
@@ -56,15 +58,19 @@ JWL = {
 			@returns	{Object}	Element instance
 		*/
 		customFactory: function(oConfig) {
-			var oComponent = JWL.components[oConfig[this.tagProperty]];
-			if (!oComponent) { return this.createDom(oConfig); }
+			var sTag = oConfig[this.tagProperty];
+			if (oConfig[this.classProperty] !== this.defaultClass) { sTag = oConfig[this.classProperty] + ':' + sTag; } 
+			var oComponent = JWL.components[sTag];
+			if (!oComponent) {
+				var fCreator = this._creator ? JUL.get(this._creator) : null;
+				return typeof fCreator === 'function' ? fCreator.call(this, oConfig) : this.createDom(oConfig);
+			}
 			var fPreCreate = oConfig.preCreate || oComponent.preCreate;
 			if (fPreCreate) { fPreCreate = JUL.get(fPreCreate); }
 			if (fPreCreate) { oConfig.preCreate = fPreCreate; }
 			var fPostCreate = oConfig.postCreate || oComponent.postCreate;
 			if (fPostCreate) { fPostCreate = JUL.get(fPostCreate); }
 			if (fPostCreate) { oConfig.postCreate = fPostCreate; }
-			if (oComponent.ui) { oConfig[this.tagProperty] = oComponent.ui[this.tagProperty]; }
 			if (typeof fPreCreate === 'function') {
 				var bReturn = fPreCreate.call(oConfig[this.parentProperty],  oConfig, this);
 				if (bReturn === false) { return null; }
@@ -112,7 +118,11 @@ JWL = {
 					delete oConfig[sItem];
 				}
 			}
-			if (oComponent.ui) { oConfig[this.includeProperty] = oComponent.ui; }
+			if (oComponent.ui) {
+				delete oConfig[this.classProperty];
+				delete oConfig[this.tagProperty];
+				oConfig[this.includeProperty] = oComponent.ui;
+			}
 			if (oComponent.logic) { oLogic[this.includeProperty] = oComponent.logic; }
 			var oWidget = this.create(oConfig, oLogic, oConfig.parent);
 			if (typeof fPostCreate === 'function') { fPostCreate.call(oWidget, oInit, this); }
@@ -209,26 +219,27 @@ JWL = {
 		JWL version
 		@type	String
 	*/
-	version: '0.5',
+	version: '0.6.5',
 	/**
-		Callback to be used as custom factory when generating elemnt wrappers
+		Callback to be used as custom factory when generating element wrappers
 		@param	{Object}	oConfig	Configuration object
 		@returns	{Object}	Element wrapper instance
 	*/
 	factory: function(oConfig) {
-		var oParser = JWL.parser;
-		var sName = oConfig[oParser.tagProperty];
-		var sTag = sName[0].toUpperCase() + sName.substr(1);
-		if (typeof JWL[sTag] !== 'function') { JWL.makeClass(sName); }
-		var oListeners = oConfig.listeners;
-		delete oConfig.listeners;
-		var oWidget = new JWL[sTag](oConfig);
-		if (!oWidget || !oListeners || typeof oListeners !== 'object') { return oWidget; }
-		var oAdd = {listeners: JUL.apply({scope: oWidget}, oListeners)};
-		oAdd[oParser.classProperty] = oConfig[oParser.classProperty];
-		oAdd[oParser.tagProperty] = sName;
-		oParser.createDom(oAdd, oWidget.el());
-		return oWidget;
+		var sName = oConfig[this.tagProperty];
+		var sNS = oConfig[this.classProperty];
+		var CNew = JUL.get('JWL.' + sNS.toUpperCase() + '.' + sName[0].toUpperCase() + sName.substr(1));
+		if (!this._includeMerger) { this._includeMerger = JWL.parser._includeMerger; }
+		if (typeof CNew !== 'function') { CNew = JWL.makeClass(sNS + ':' + sName, false, this); }
+		return new CNew(oConfig);
+	},
+	/**
+		Gets a wrapper object associated with an element
+		@param	{Object}	oEl	DOM Element
+		@returns	{Object}	Element wrapper of null if not found
+	*/
+	get: function(oEl) {
+		return typeof JWL._Base_ === 'function' ? JWL._Base_.get(oEl) : null;
 	},
 	/**
 		Loads component(s) from a string serialization
@@ -294,30 +305,104 @@ JWL = {
 		Creates an element wrapper class for a specific component
 		@param	{String}	sName	Component name or existing HTML tag
 		@param	{String}	[sNewNS]	Optiobal namespace under to put the class constructor, it defaults to 'JWL.<Name>
+		@param	{Object}	[oParser]	Custom instance of JUL.UI.Parser to use instead of the default JWL.parser
 		@returns	{Function}	Class constructor
 	*/
-	makeClass: function(sName, sNewNS) {
+	makeClass: function(sName, sNewNS, oParser) {
+		oParser = oParser || this.parser;
+		if (sName.indexOf(oParser.defaultClass + ':') === 0) { sName = sName.substr(oParser.defaultClass.length + 1); }
 		var oComponent = this.components[sName] || {};
-		var sTag = oComponent.ui ? oComponent.ui[this.parser.tagProperty] : sName;
+		var sNS = oParser.defaultClass;
+		if (sName.indexOf(':') > -1) {
+			sNS = sName.split(':')[0];
+			sName = sName.substr(sNS.length + 1);
+		}
 		if (typeof JWL._Base_ !== 'function') {
 			JWL._Base_ = function() {};
 			JUL.apply(JWL._Base_.prototype, {
-				get: function(sItem) { return sItem in this ? this[sItem] : this._el[sItem]; },
+				get: function(sItem) { return sItem in this ? this[sItem] : JWL._Base_.wrapUp(this._el[sItem]); },
 				set: function(sItem, oValue, bHost) { (bHost || sItem in this ? this : this._el)[sItem] = oValue; },
 				el: function() { return this._el; },
 				config: function() { return this._config; }
 			});
+			JUL.apply(JWL._Base_, {
+				id: 1,
+				items: {},
+				attributeName: 'data-component-id',
+				map: function(oComponent) {
+					var oEl = oComponent.el();
+					if (!oEl) { return; }
+					var sItem = 'c-' + this.id++;
+					this.items[sItem] = oComponent;
+					oEl.setAttribute(this.attributeName, sItem);
+				},
+				get: function(sId) {
+					if (sId && typeof sId !== 'string') { sId = sId.getAttribute(this.attributeName); }
+					return sId ? this.items[sId] || null : null;
+				},
+				cleanUp: function() {
+					if ((this.id - 1) % 4096) { return; }
+					var oItems = {};
+					var fClean = function(oNode) {
+						for (var i = 0; i < oNode.childNodes.length; i++) {
+							var oChild = oNode.childNodes[i];
+							if (oChild.nodeType !== 1) { continue; }
+							var sItem = oChild.getAttribute(this.attributeName);
+							if (sItem) { oItems[sItem] = this.items[sItem]; }
+							fClean.call(this, oChild);
+						}
+					};
+					fClean.call(this, document.body);
+					this.items = oItems;
+				},
+				wrapUp: function(oData) {
+					try {
+						if (!oData) { return oData; }
+						if (oData instanceof Element && oData.nodeType === 1) {
+							return oData.getAttribute(this.attributeName) ? this.get(oData) : oData;
+						}
+						if (typeof oData === 'object' && typeof oData.length && oData[0] instanceof Element) {
+							var aReturn = [];
+							for (var i = 0; i < oData.length; i++) {
+								aReturn[i] = oData[i].nodeType === 1 && oData[i].getAttribute(this.attributeName) ? this.get(oData[i]) : oData[i];
+							}
+							return aReturn;
+						}
+					}
+					catch (e) {}
+					return oData;
+				}
+			});
 		}
-		var fClass = function(oConfig) {
-			oConfig = JUL.apply({}, oConfig || {});
-			oConfig[JWL.parser.tagProperty] = sName;
+		var fClass = function(oConfig, oEl) {
+			oConfig = oConfig  || {};
 			this._config = oConfig;
-			this._el = JWL.parser.create(oConfig, null, oConfig[JWL.parser.parentProperty]);
+			if (oEl) {
+				this._el = oEl;
+			}
+			else {
+				oConfig = JUL.apply({}, oConfig);
+				delete this._config[this._parser.parentProperty];
+				oConfig[this._parser.classProperty] = sNS;
+				oConfig[this._parser.tagProperty] = sName;
+				oConfig.listeners = JUL.apply({scope: this}, oConfig.listeners || {});
+				this._el = JWL.parser.customFactory.call(this._parser, oConfig);
+				if (this._el instanceof JWL._Base_) {
+					this._el._config = this._config;
+					return this._el;
+				}
+			}
+			JWL._Base_.map(this);
+			JWL._Base_.cleanUp();
 		};
 		fClass.prototype = new JWL._Base_();
 		fClass.prototype.constructor = fClass;
+		fClass.prototype._parser = oParser;
 		this._protoCache = this._protoCache || {};
 		var sItem, oProto;
+		var sCompNS = oComponent.ui ? oComponent.ui[oParser.classPrpperty] || oParser.defaultClass : sNS;
+		var sCompTag = oComponent.ui ? oComponent.ui[oParser.tagProperty] : sName;
+		var sTag = sCompNS + ':' + sCompTag;
 		if (!this._protoCache[sTag]) {
 			this._protoCache[sTag] = {attributes: false, baseURI: false, childNodes: false, className: false,  
 				dataset: false, firstChild: false, innerHTML: false, lastChild: false, localName: false, 
@@ -334,9 +419,10 @@ JWL = {
 				removeChild: true, removeEventListener: true, replaceChild: true, scrollIntoView: true, setAttribute: true, 
 				setAttributeNode: true, setAttributeNodeNS: true, setAttributeNS: true, setCapture: true};
 			var oFilter = /^[a-z]/;
-			oProto = document.createElement(sTag);
-			oProto.style.cssText = oProto.style.cssText + ';display:none';
-			document.body.appendChild(oProto);
+			var oProtoConfig = {};
+			oProtoConfig[oParser.classProperty] = sCompNS;
+			oProtoConfig[oParser.tagProperty] = sCompTag;
+			oProto = oParser.createDom(oProtoConfig);
 			for (sItem in oProto) {
 				if (!oFilter.test(sItem)) { continue; }
 				try {
@@ -344,7 +430,6 @@ JWL = {
 				}
 				catch (e) {}
 			}
-			document.body.removeChild(oProto);
 		}
 		oProto = this._protoCache[sTag];
 		this._methodCache = this._methodCache || {getter: {}, setter: {}, other: {}};
@@ -358,17 +443,22 @@ JWL = {
 							for (var i = 0; i < aArgs.length; i++) {
 								if (aArgs[i] instanceof JWL._Base_) { aArgs[i] = aArgs[i].el(); }
 							}
-							return this._el[sItem].apply(this._el, aArgs);
+							return JWL._Base_.wrapUp(this._el[sItem].apply(this._el, aArgs));
 						};
 					})(sItem);
 					fClass.prototype[sItem] = this._methodCache.other[sItem];
 				}
 				else {
 					this._methodCache.getter[sItem] = this._methodCache.getter[sItem] || (function(sItem) {
-						return function() { return this._el ? this._el[sItem] : undefined; };
+						return function() {
+							return this._el ? JWL._Base_.wrapUp(this._el[sItem]) : undefined;
+						};
 					})(sItem);
 					this._methodCache.setter[sItem] = this._methodCache.setter[sItem] || (function(sItem) {
-						return function(oValue) { if (this._el) { this._el[sItem] = oValue; } };
+						return function(oValue) {
+							if (oValue instanceof JWL._Base_) { oValue = oValue.el(); }
+							if (this._el) { this._el[sItem] = oValue; }
+						};
 					})(sItem);
 					try {
 						Object.defineProperty(fClass.prototype, sItem, {
@@ -383,22 +473,25 @@ JWL = {
 			}
 		}
 		JUL.apply(fClass.prototype, oComponent.prototype || {});
-		JUL.ns(sNewNS || 'JWL.' + sName[0].toUpperCase() + sName.substr(1), fClass);
-		return fClass;
+		var sWhat = 'JWL.' + sNS.toUpperCase() + '.' + sName[0].toUpperCase() + sName.substr(1);
+		return JUL.ns(sNewNS || sWhat, fClass);
 	},
 	/**
 		Registers a JWL component as a custom HTML element (W3C web components)
 		@param	{String}	sName	Component name
 		@param	{Boolean}	[bDerived]	Set it to true to register derived a custom HTML element
 		@param	{String}	[sNewName]	Optional new tag name instead of prepending 'jwl-' to the component name
+		@param	{Object}	[oParser]	Custom instance of JUL.UI.Parser to use instead of the default JWL.parser
 		@returns	{Function}	Registered element constructor
 	*/
-	register: function(sName, bDerived, sNewName) {
+	register: function(sName, bDerived, sNewName, oParser) {
+		oParser = oParser || this.parser;
+		if (sName.indexOf(oParser.defaultClass + ':') === 0) { sName = sName.substr(oParser.defaultClass.length + 1); }
 		var oComponent = this.components[sName] || {};
-		this.loadCss(sName);
 		var oPrototype = JUL.apply({
 			_componentName: sName,
 			_derived: bDerived && true,
+			_parser: oParser,
 			el: function() {
 				return (this.shadowRoot || this).lastChild;
 			},
@@ -418,28 +511,44 @@ JWL = {
 				}
 			},
 			attachedCallback: function() {
-				var oRoot = this.shadowRoot || this;
-				if (oRoot.childNodes.length && oRoot.lastChild.nodeName.toLowerCase() !== 'style') { return; }
 				var oComponent = JWL.components[this._componentName] || {};
 				if (!oComponent.ui) { return; }
+				var oRoot = this.shadowRoot || this;
+				if (oRoot.childNodes.length && oRoot.lastChild.nodeName.toLowerCase() !== 'style') { return; }
+				var sNS = this._parser.defaultClass;
+				var sName = this._componentName;
+				if (sName.indexOf(':') > -1) {
+					sNS = sName.split(':')[0];
+					sName = sName.substr(sNS.length + 1);
+				}
 				var oConfig = {};
-				oConfig[JWL.parser.tagProperty] = this._componentName;
-				JWL.parser.create(oConfig, null, oRoot);
+				oConfig[this._parser.classProperty] = sNS;
+				oConfig[this._parser.tagProperty] = sName;
+				oConfig[this._parser.parentProperty] = oRoot;
+				JWL.parser.customFactory.call(this._parser, oConfig);
 			}
 		}, oComponent.prototype || {});
-		var sTag = oComponent.ui ? oComponent.ui[this.parser.tagProperty] : sName;
+		var sNS = oParser.defaultClass;
+		if (sName.indexOf(':') > -1) {
+			sNS = sName.split(':')[0];
+			sName = sName.substr(sNS.length + 1);
+		}
+		var sTag = '';
 		if (bDerived) {
-			var oEl = document.createElement(sTag);
-			oEl.style.cssText = oEl.style.cssText + ';display:none';
-			document.body.appendChild(oEl);
+			var sCompNS = oComponent.ui ? oComponent.ui[oParser.classPrpperty] || oParser.defaultClass : sNS;
+			var sCompTag = oComponent.ui ? oComponent.ui[oParser.tagProperty] : sName;
+			sTag = (sCompNS === oParser.defaultClass ? '' : sCompNS + ':') + sCompTag;
+			var oElConfig = {};
+			oElConfig[oParser.classProperty] = sCompNS;
+			oElConfig[oParser.tagProperty] = sCompTag;
+			var oEl = oParser.createDom(oElConfig);
 			oPrototype = JUL.apply(Object.create(oEl.constructor.prototype), oPrototype);
-			oPrototype = JUL.apply(Object.create(HTMLElement.prototype), oPrototype);
-			document.body.removeChild(oEl);
 		}
 		else {
 			oPrototype = JUL.apply(Object.create(HTMLElement.prototype), oPrototype);
 		}
-		return document.registerElement(sNewName || this.registerPrefix + '-' + sName, bDerived ? 
+		sName = this.registerPrefix + '-' + (sNS === oParser.defaultClass ? '' : sNS + '-') + sName;
+		return document.registerElement(sNewName || sName, bDerived ? 
 			{'extends': sTag, prototype: oPrototype} : {prototype: oPrototype});
 	},
 	/**
@@ -452,7 +561,7 @@ JWL = {
 	},
 	/**
 		Creates and triggers a custom DOM event
-		@param	{Object}	oTarget	Target elment or element wrapper to trigger the event on
+		@param	{Object}	oTarget	Target element or element wrapper to trigger the event on
 		@param	{String}	sEvent	Event name
 		@param	{Object}	[oInit]	Hash of additional event properties
 		@returns	{Boolean}	The result of dispatching the event to its cascaded listeners
@@ -485,9 +594,10 @@ JWL = {
 		}
 		return	oTarget.dispatchEvent(oEvent);
 	}
-};
+});
 
 JWL.parser = new JUL.UI.Parser(JWL.parserConfig);
+JUL.ns('JWL.components');
 
 })();
 
