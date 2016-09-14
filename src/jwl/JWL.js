@@ -228,7 +228,7 @@ JUL.apply(JWL, /** @lends JWL */ {
 	*/
 	version: '0.7',
 	/**
-		Creates a mew parser derived from JWL.parser
+		Creates a new parser derived from JWL.parser
 		@class
 		@extends	JWL.parser
 		@param	{Object}	oConfig	Configuration object
@@ -237,10 +237,10 @@ JUL.apply(JWL, /** @lends JWL */ {
 		JUL.UI.Parser.call(this, oConfig);
 	},
 	/**
-		Callback to be used a JWL.Parser custom factory to self-register and to create custom HTML elements.
+		Callback to be used as the JWL.Parser custom factory to self-register and to create custom HTML elements.
 		e.g. var oParser = new JWL.Parser({customFactory: 'JWL.custom'});
 		@param	{Object}	oConfig	Configuration object
-		@returns	{Object}	Mew element
+		@returns	{Object}	New element
 	*/
 	custom: function(oConfig) {
 			var sName = oConfig[this.tagProperty];
@@ -263,7 +263,7 @@ JUL.apply(JWL, /** @lends JWL */ {
 			return this.createDom(oConfig);
 	},
 	/**
-		Callback to be used a JWL.Parser custom factory to create element wrappers.
+		Callback to be used as the JWL.Parser custom factory to create element wrappers.
 		e.g. var oParser = new JWL.Parser({customFactory: 'JWL.factory'});
 		@param	{Object}	oConfig	Configuration object
 		@returns	{Object}	Element wrapper instance
