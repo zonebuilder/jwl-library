@@ -19,6 +19,15 @@ Browser support
 
 JCompatible with all major browsers including: FF4+, Chrome 5+, IE9+, Edge, Opera 11+, Safari 5+ 
 
+Features
+--------
+ 
+* creating HTML components from configuration objects 
+* structural composition of the layout and the interface behavior with cascading element listeners 
+* configuration and component inheritance 
+* registering the components as HTML5 custom elements in supported browsers 
+* two-way, fully recursive element wrappers for all browsers 
+
 Build & install
 ---------------
 

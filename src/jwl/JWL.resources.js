@@ -1,5 +1,5 @@
 /*
-	JWL - The JavaScript Widget Library version 0.6.5
+	JWL - The JavaScript Widget Library version 0.7
 	Copyright (c) 2016 The Zonebuilder (zone.builder@gmx.com)
 	http://sourceforge.net/projects/jwl-library/
 	Licenses: GNU GPL2 or later; GNU LGPLv3 or later (http://sourceforge.net/p/jwl-library/wiki/License/)

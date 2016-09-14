@@ -1,5 +1,5 @@
 /*
-	JWL - The JavaScript Widget Library version 0.6.5
+	JWL - The JavaScript Widget Library version 0.7
 	Copyright (c) 2016 The Zonebuilder (zone.builder@gmx.com)
 	http://sourceforge.net/projects/jwl-library/
 	Licenses: GNU GPL2 or later; GNU LGPLv3 or later (http://sourceforge.net/p/jwl-library/wiki/License/)
@@ -65,20 +65,31 @@ JUL.apply(JWL, /** @lends JWL */ {
 				var fCreator = this._creator ? JUL.get(this._creator) : null;
 				return typeof fCreator === 'function' ? fCreator.call(this, oConfig) : this.createDom(oConfig);
 			}
+			oConfig._componentIndex = sTag;
 			var fPreCreate = oConfig.preCreate || oComponent.preCreate;
 			if (fPreCreate) { fPreCreate = JUL.get(fPreCreate); }
-			if (fPreCreate) { oConfig.preCreate = fPreCreate; }
+			delete oConfig.preCreate;
 			var fPostCreate = oConfig.postCreate || oComponent.postCreate;
 			if (fPostCreate) { fPostCreate = JUL.get(fPostCreate); }
 			if (fPostCreate) { oConfig.postCreate = fPostCreate; }
+			var oHost = oConfig[this.parentProperty] ? oConfig[this.parentProperty].host || oConfig[this.parentProperty] : null;
+			if (oHost && oHost._componentName && oHost._derived) {
+				oConfig[this.classProperty] = this.defaultClass;
+				oConfig[this.tagProperty] = 'div';
+			}
+			else if (oComponent.ui) {
+				oConfig[this.classProperty] = oComponent.ui[this.classProperty] || this.defaultClass;
+				oConfig[this.tagProperty] = oComponent.ui[this.tagProperty];
+			}
 			if (typeof fPreCreate === 'function') {
 				var bReturn = fPreCreate.call(oConfig[this.parentProperty],  oConfig, this);
 				if (bReturn === false) { return null; }
 			}
+			fPostCreate = oConfig.postCreate;
+			delete oConfig.postCreate;
 			var oInit = oConfig;
 			oConfig = JUL.apply({}, oConfig);
-			delete oConfig.preCreate;
-			delete oConfig.postCreate;
+			delete oConfig._componentIndex;
 			var oLogic = {};
 			var sBinding = oComponent.ui ? oComponent.ui[this.bindingProperty] : '.component';
 			if (!oComponent.ui) { oConfig[this.bindingProperty] = sBinding; }
@@ -118,11 +129,7 @@ JUL.apply(JWL, /** @lends JWL */ {
 					delete oConfig[sItem];
 				}
 			}
-			if (oComponent.ui) {
-				delete oConfig[this.classProperty];
-				delete oConfig[this.tagProperty];
-				oConfig[this.includeProperty] = oComponent.ui;
-			}
+			if (oComponent.ui) { oConfig[this.includeProperty] = oComponent.ui; }
 			if (oComponent.logic) { oLogic[this.includeProperty] = oComponent.logic; }
 			var oWidget = this.create(oConfig, oLogic, oConfig.parent);
 			if (typeof fPostCreate === 'function') { fPostCreate.call(oWidget, oInit, this); }
@@ -219,9 +226,45 @@ JUL.apply(JWL, /** @lends JWL */ {
 		JWL version
 		@type	String
 	*/
-	version: '0.6.5',
+	version: '0.7',
 	/**
-		Callback to be used as custom factory when generating element wrappers
+		Creates a mew parser derived from JWL.parser
+		@class
+		@extends	JWL.parser
+		@param	{Object}	oConfig	Configuration object
+	*/
+	Parser: function(oConfig) {
+		JUL.UI.Parser.call(this, oConfig);
+	},
+	/**
+		Callback to be used a JWL.Parser custom factory to self-register and to create custom HTML elements.
+		e.g. var oParser = new JWL.Parser({customFactory: 'JWL.custom'});
+		@param	{Object}	oConfig	Configuration object
+		@returns	{Object}	Mew element
+	*/
+	custom: function(oConfig) {
+			var sName = oConfig[this.tagProperty];
+			if (oConfig[this.classProperty] !== this.defaultClass) { sName = oConfig[this.classProperty] + ':' + sName; }
+			var oComponent = JWL.components[sName];
+			if (oComponent) {
+				JWL._customCache = JWL._customCache || {};
+				var sKey = oConfig[this.className] + ':' + oConfig[this.tagProperty];
+				if (typeof JWL._customCache[sKey] !== 'function') {
+					try {
+						JWL._customCache[sKey] = JWL.register(sName, false, '', this);
+					}
+					catch (e) {}
+				}
+				oConfig[this.tagProperty] = JWL.registerPrefix + '-' +
+					(oConfig[this.classProperty] === this.defaultClass ? '' : oConfig[this.classProperty] + '-') +
+					oConfig[this.tagProperty];
+				oConfig[this.classProperty] = this.defaultClass;
+			}
+			return this.createDom(oConfig);
+	},
+	/**
+		Callback to be used a JWL.Parser custom factory to create element wrappers.
+		e.g. var oParser = new JWL.Parser({customFactory: 'JWL.factory'});
 		@param	{Object}	oConfig	Configuration object
 		@returns	{Object}	Element wrapper instance
 	*/
@@ -229,7 +272,6 @@ JUL.apply(JWL, /** @lends JWL */ {
 		var sName = oConfig[this.tagProperty];
 		var sNS = oConfig[this.classProperty];
 		var CNew = JUL.get('JWL.' + sNS.toUpperCase() + '.' + sName[0].toUpperCase() + sName.substr(1));
-		if (!this._includeMerger) { this._includeMerger = JWL.parser._includeMerger; }
 		if (typeof CNew !== 'function') { CNew = JWL.makeClass(sNS + ':' + sName, false, this); }
 		return new CNew(oConfig);
 	},
@@ -376,16 +418,17 @@ JUL.apply(JWL, /** @lends JWL */ {
 		}
 		var fClass = function(oConfig, oEl) {
 			oConfig = oConfig  || {};
-			this._config = oConfig;
+			this._config = JUL.apply({}, oConfig);
+			delete this._config[this._parser.parentProperty];
+			oConfig = JUL.apply({}, oConfig);
+			oConfig[this._parser.classProperty] = sNS;
+			oConfig[this._parser.tagProperty] = sName;
+			oConfig.listeners = JUL.apply({scope: this}, oConfig.listeners || {});
 			if (oEl) {
+				oParser.creteDom(oConfig, oEl);
 				this._el = oEl;
 			}
 			else {
-				oConfig = JUL.apply({}, oConfig);
-				delete this._config[this._parser.parentProperty];
-				oConfig[this._parser.classProperty] = sNS;
-				oConfig[this._parser.tagProperty] = sName;
-				oConfig.listeners = JUL.apply({scope: this}, oConfig.listeners || {});
 				this._el = JWL.parser.customFactory.call(this._parser, oConfig);
 				if (this._el instanceof JWL._Base_) {
 					this._el._config = this._config;
@@ -596,8 +639,9 @@ JUL.apply(JWL, /** @lends JWL */ {
 	}
 });
 
-JWL.parser = new JUL.UI.Parser(JWL.parserConfig);
 JUL.ns('JWL.components');
+JWL.parser = new JUL.UI.Parser(JWL.parserConfig);
+JWL.Parser.prototype = JWL.parser;
 
 })();
 

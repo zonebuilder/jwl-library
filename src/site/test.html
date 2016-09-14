@@ -103,11 +103,11 @@ document.getElementById('custom-component').innerHTML = "JWL.register('frameplay
 	"var oParser = new JUL.UI.Parser(JWL.tests.custom.parserConfig);\n" +
 	"oParser.create(JWL.tests.custom.ui, JWL.tests.custom.logic, document.body);\n";
 document.getElementById('class-component').innerHTML = "// no registering needed \n" +
-	"var oParser = new JUL.UI.Parser(JWL.tests.wrapper.parserConfig);\n" +
+	"var oParser = new JWL.Parser(JWL.tests.wrapper.parserConfig);\n" +
 	"oParser.create(JWL.tests.wrapper.ui, JWL.tests.wrapper.logic, document.body);\n";
 APP = {
 	customParser: new JUL.UI.Parser(JWL.tests.custom.parserConfig),
-	classParser: new JUL.UI.Parser(JWL.tests.wrapper.parserConfig)
+	classParser: new JWL.Parser(JWL.tests.wrapper.parserConfig)
 };
 try {
 	JWL.register('frameplayer');

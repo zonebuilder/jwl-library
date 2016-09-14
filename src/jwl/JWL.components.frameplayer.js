@@ -1,5 +1,5 @@
 /*
-	JWL - The JavaScript Widget Library version 0.6.5
+	JWL - The JavaScript Widget Library version 0.7
 	Copyright (c) 2016 The Zonebuilder (zone.builder@gmx.com)
 	http://sourceforge.net/projects/jwl-library/
 	Licenses: GNU GPL2 or later; GNU LGPLv3 or later (http://sourceforge.net/p/jwl-library/wiki/License/)
@@ -81,7 +81,6 @@ JUL.apply(JWL.components.frameplayer, /** @lends JWL.components.frameplayer */ {
 		var sItem;
 		var oHost = this ? this.host || this : null;
 		if (oHost && oHost._componentName) {
-			if (oHost._derived) { oConfig[oParser.tagProperty] = 'div'; }
 			for (sItem in oMap) {
 				if (oMap.hasOwnProperty(sItem)) { oConfig[sItem] = oHost.getAttribute(sItem); }
 			}
@@ -192,8 +191,8 @@ JUL.apply(JWL.components.frameplayer, /** @lends JWL.components.frameplayer */ {
 		Array of internal/external CSS for registering the custom element
 		@type	Array
 	*/
-	css: ['lib/faws/css/font-awesome.min.css?v=0.6.5',
-	 'lib/jwl/css/playerbar.css?v=0.6.5', 'lib/jwl/css/jsonoptions.css?v=0.6.5', 'lib/jwl/css/frameplayer.css?v=0.6.5']
+	css: ['lib/faws/css/font-awesome.min.css?v=0.7',
+	 'lib/jwl/css/playerbar.css?v=0.7', 'lib/jwl/css/jsonoptions.css?v=0.7', 'lib/jwl/css/frameplayer.css?v=0.7']
 });
 
 })();

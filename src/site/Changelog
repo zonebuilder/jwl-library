@@ -1,3 +1,6 @@
+v0.7 (2016-09-14):
+  * added JWL.Parser() to create parsers derived from JWL.parser
+  * added JWL.custom() to self-register and build custom HTML elements
 v0.6.5 (2016-08-29):
   * implemented two-way, fully recursive element wrappers
 v0.5 (2016-08-05):

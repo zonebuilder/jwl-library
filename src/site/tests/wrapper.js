@@ -11,9 +11,9 @@ JUL.apply(JWL.tests.wrapper,
 	ns: 'JWL.tests.wrapper',
 	suggestedFramework: 'html',
 	title: 'JWL Components - Wrapper test',
-	version: '1.1470029753736',
+	version: '1.1473753543020',
 	init: function () {
-		var oParser = new JUL.UI.Parser(this.parserConfig);
+		var oParser = new JWL.Parser(this.parserConfig);
 		oParser.create(this.ui, this.logic, document.body);
 	}
 }
