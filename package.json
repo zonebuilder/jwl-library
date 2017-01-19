@@ -1,6 +1,6 @@
 {
-  "name": "jwl-library",
-  "version": "0.7.0",
+  "name": "jwl-library-src",
+  "version": "0.8.0",
   "description": "JWL - The JavaScript Widget Library",
   "main": "index.html",
   "scripts": {
@@ -15,21 +15,22 @@
     "UI",
     "generator"
   ],
-  "author": "The Zonebuilder",
+  "author": "The Zonebuilder <zone.builder@gmx.com> (http://www.google.com/search?hl=en&num=50&start=0&safe=0&filter=0&nfpr=1&q=The+Zonebuilder+web+development+programming+IT+society+philosophy+politics)",
   "license": "LGPL-3.0",
   "bugs": {
     "url": "https://github.com/zonebuilder/jwl-library/issues"
   },
   "homepage": "https://github.com/zonebuilder/jwl-library#readme",
   "devDependencies": {
-    "gulp": "*",
-    "gulp-add-src": "*",
-    "gulp-clean": "*",
-    "gulp-concat": "*",
-    "gulp-jshint": "*",
-    "gulp-load-plugins": "*",
-    "gulp-strip-comments": "*",
-    "jsdoc2": "*",
-    "jshint": "*"
+    "gulp": "3.x",
+    "gulp-add-src": "0.x",
+    "gulp-clean": "0.x",
+    "gulp-concat": "2.x",
+    "gulp-jshint": "2.x",
+    "gulp-load-plugins": "1.x",
+    "gulp-strip-comments": "2.x",
+    "jsdoc2": "2.x",
+    "jshint": "2.x",
+    "pump": "1.x"
   }
 }

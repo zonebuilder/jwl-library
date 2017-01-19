@@ -7,12 +7,13 @@ var oConfig = {
 	concatName: 'jwl.js',
 	concatDest: 'build/lib/jwl',
 	minDest: 'build/js',
-	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.7 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
+	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.8 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
 	jsdocFrom: 'src/jwl'
 };
 var fRun = require('child_process').exec;
 var oGulp = require('gulp');
 var oPlugins = require('gulp-load-plugins')();
+require('pump');
 
 oGulp.task('site', function() {
 	return oGulp.src(oConfig.copy)
@@ -37,10 +38,8 @@ oGulp.task('clean', function() {
 	.pipe(oPlugins.clean());
 });
 
-oGulp.task('build', function() {
-	oGulp.start(['site', 'scripts', 'jsdoc']);
-});
+oGulp.task('build', ['site', 'scripts', 'jsdoc']);
 
 oGulp.task('default', ['clean'], function() {
-	oGulp.start(['site', 'scripts', 'jsdoc']);
+	oGulp.start('build');
 });

@@ -62,9 +62,9 @@ h1 {
 }
 </style>
 <script type="text/javascript" src="../lib/jul/jul.js?v=1.3.5"></script>
-<script type="text/javascript" src="../lib/jwl/jwl.js?v=00.7"></script>
-	<script type="text/javascript" src="../tests/custom.js?v=00.7"></script>
-	<script type="text/javascript" src="../tests/wrapper.js?v=00.7"></script>
+<script type="text/javascript" src="../lib/jwl/jwl.js?v=0.8"></script>
+	<script type="text/javascript" src="../tests/custom.js?v=0.8"></script>
+	<script type="text/javascript" src="../tests/wrapper.js?v=0.8"></script>
   </head>
   <body>
     <div id="content">
@@ -74,8 +74,8 @@ h1 {
               src="../media/jwl144.png" width="220" height="144" /> </div>
           <div id="logo-right">
             <h1>JWL</h1>
-            <p>Version 00.7</p>
-            <p>Copyright © 2016 <a target="_blank"
+            <p>Version 0.8</p>
+            <p>Copyright © 2016 - 2017 <a target="_blank"
 href="http://www.google.com/search?hl=en&amp;num=50&amp;start=0&amp;safe=0&amp;filter=0&amp;nfpr=1&amp;q=The+Zonebuilder+web+development+programming+IT+society+philosophy+politics">
                 The Zonebuilder</a></p>
           </div>
@@ -264,7 +264,7 @@ href="http://www.google.com/search?hl=en&amp;num=50&amp;start=0&amp;safe=0&amp;f
 	   prototype: JWL.components.frameplayer.prototype, css: JWL.components.frameplayer.css}) + ");\n";
    document.getElementById('show-test-frameplayer').innerHTML = "JWL.components.frameplayer.init = " +
    	JUL.UI.obj2str(JWL.components.frameplayer.init).replace(/\s*JWL\.parser\._keep(\s|\S)+?;/, '') + ";\n";
-   document.getElementById('show-test-custom').innerHTML = "JWL.register('frameplayer');\nJWL.tests.custom.parserConfig = " +
+   document.getElementById('show-test-custom').innerHTML = " // parser self-registers custom elements\nJWL.tests.custom.parserConfig = " +
    	JUL.UI.obj2str(JWL.tests.custom.parserConfig) + ";\nJWL.tests.custom.init = " +
 	   JUL.UI.obj2str(JWL.tests.custom.init) + ";\n";
    document.getElementById('show-test-wrapper').innerHTML = " // no registering needed\nJWL.tests.wrapper.parserConfig = " +

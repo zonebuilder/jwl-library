@@ -1,3 +1,7 @@
+<p align="center">
+<img alt="JWL" src="https://zonebuilder.github.io/media/jwl144.png" width="220" height="144" />
+</p>
+
 JWL - The JavaScript Widget Library
 ===================================
 
@@ -17,7 +21,7 @@ License
 Browser support
 ---------------
 
-JCompatible with all major browsers including: FF4+, Chrome 5+, IE9+, Edge, Opera 11+, Safari 5+ 
+Compatible with all major browsers including: FF4+, Chrome 5+, IE9+, Edge, Opera 11+, Safari 5+ 
 
 Features
 --------
@@ -40,7 +44,7 @@ Run the following shell commands in order:
 ```
 The release will be in 'build' folder.
 
-Downloads & User support
+Downloads & user support
 ------------------------
 
 [jwl-library project on SourceForge](http://sourceforge.net/projects/jwl-library/)

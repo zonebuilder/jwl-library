@@ -1,3 +1,6 @@
+v0.8 (2017-01-19):
+  * enhanced JWL components & element wrappers
+  * same user code both for custom HTML elements and for element wrappers
 v0.7 (2016-09-14):
   * added JWL.Parser() to create parsers derived from JWL.parser
   * added JWL.custom() to self-register and build custom HTML elements

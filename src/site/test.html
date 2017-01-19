@@ -86,7 +86,7 @@ but can augment them the same way as the custom elements do.
 </tr>
 </tbody>
 </table>
-<p id="copy">Copyright &copy; 2016 <a target="_blank" href="http://www.google.com/search?hl=en&num=50&start=0&safe=0&filter=0&nfpr=1&q=The+Zonebuilder+web+development+programming+IT+society+philosophy+politics">The Zonebuilder</a>
+<p id="copy">Copyright &copy; 2016 - 2017 <a target="_blank" href="http://www.google.com/search?hl=en&num=50&start=0&safe=0&filter=0&nfpr=1&q=The+Zonebuilder+web+development+programming+IT+society+philosophy+politics">The Zonebuilder</a>
 </div>
 <script type="text/javascript">
 document.getElementById('custom-parser').innerHTML = 'JWL.tests.custom.parserConfig = ' +
@@ -99,18 +99,17 @@ document.getElementById('custom-interface').innerHTML = 'JWL.tests.custom.ui = '
 document.getElementById('class-interface').innerHTML = 'JWL.tests.wrapper.ui = ' +
 	JUL.UI.obj2str(JWL.tests.wrapper.ui) + ';\n\n' +
 	'JWL.tests.wrapper.logic = ' + JUL.UI.obj2str(JWL.tests.wrapper.logic) + ';\n';
-document.getElementById('custom-component').innerHTML = "JWL.register('frameplayer');\n" +
-	"var oParser = new JUL.UI.Parser(JWL.tests.custom.parserConfig);\n" +
+document.getElementById('custom-component').innerHTML = " // parser self-regusters custom elements \n" +
+	"var oParser = new JWL.Parser(JWL.tests.custom.parserConfig);\n" +
 	"oParser.create(JWL.tests.custom.ui, JWL.tests.custom.logic, document.body);\n";
 document.getElementById('class-component').innerHTML = "// no registering needed \n" +
 	"var oParser = new JWL.Parser(JWL.tests.wrapper.parserConfig);\n" +
 	"oParser.create(JWL.tests.wrapper.ui, JWL.tests.wrapper.logic, document.body);\n";
 APP = {
-	customParser: new JUL.UI.Parser(JWL.tests.custom.parserConfig),
+	customParser: new JWL.Parser(JWL.tests.custom.parserConfig),
 	classParser: new JWL.Parser(JWL.tests.wrapper.parserConfig)
 };
 try {
-	JWL.register('frameplayer');
 	APP.customParser.create(JWL.tests.custom.ui, JWL.tests.custom.logic, document.getElementById('custom-player'));
 }
 catch (e) {
