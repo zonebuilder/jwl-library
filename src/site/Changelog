@@ -1,3 +1,5 @@
+v0.8.1 (2017-02-11):
+  * maintenance release
 v0.8 (2017-01-19):
   * enhanced JWL components & element wrappers
   * same user code both for custom HTML elements and for element wrappers
