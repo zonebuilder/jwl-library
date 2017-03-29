@@ -1,5 +1,5 @@
 /*
-	JWL - The JavaScript Widget Library version 0.8.1
+	JWL - The JavaScript Widget Library version 0.8.2
 	Copyright (c) 2016 - 2017 The Zonebuilder <zone.builder@gmx.com>
 	http://sourceforge.net/projects/jwl-library/
 	Licenses: GNU GPL2 or later; GNU LGPLv3 or later (http://sourceforge.net/p/jwl-library/wiki/License/)
@@ -205,7 +205,7 @@ JUL.apply(JWL.components.frameplayer, /** @lends JWL.components.frameplayer */ {
 		Array of internal/external CSS for registering the custom element
 		@type	Array|String
 	*/
-	css: 'lib/jwl/css/frameplayer.css?v=0.8.1'
+	css: 'lib/jwl/css/frameplayer.css?v=0.8.2'
 });
 
 })();
