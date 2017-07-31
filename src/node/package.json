@@ -1,8 +1,8 @@
 {
-  "name": "jwl-library-src",
+  "name": "jwl",
   "version": "0.8.3",
   "description": "JWL - The JavaScript Widget Library",
-  "main": "index.html",
+  "main": "./lib/jwl/jwl.js",
   "scripts": {
     "make": "node_modules/.bin/gulp",
 	"test": "echo \"Error: no test specified\" && exit 1"
@@ -21,16 +21,7 @@
     "url": "https://github.com/zonebuilder/jwl-library/issues"
   },
   "homepage": "https://github.com/zonebuilder/jwl-library#readme",
-  "devDependencies": {
-    "gulp": "3.x",
-    "gulp-add-src": "0.x",
-    "gulp-clean": "0.x",
-    "gulp-concat": "2.x",
-    "gulp-jshint": "2.x",
-    "gulp-load-plugins": "1.x",
-    "gulp-strip-comments": "2.x",
-    "jsdoc2": "2.x",
-    "jshint": "2.x",
-    "pump": "1.x"
+  "dependencies": {
+    "jul": "1.x"
   }
 }

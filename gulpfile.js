@@ -7,8 +7,12 @@ var oConfig = {
 	concatName: 'jwl.js',
 	concatDest: 'build/lib/jwl',
 	minDest: 'build/js',
-	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.8.2 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
-	jsdocFrom: 'src/jwl'
+	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.8.3 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
+	jsdocFrom: 'src/jwl',
+	copyNode: ['build/**', '!build/Readme', '!build/index.html','!build/test.html',  '!build/js/**', '!build/docs/index.html*', '!build/tests/**',
+		 '!build/media/**', '!build/tests', '!build/js', '!build/License', '!build/media',
+		 'README.md', 'LICENSE', 'src/node/**'],
+	destNode: 'build_node'
 };
 var fRun = require('child_process').exec;
 var oGulp = require('gulp');
@@ -40,6 +44,16 @@ oGulp.task('clean', function() {
 
 oGulp.task('build', ['site', 'scripts', 'jsdoc']);
 
-oGulp.task('default', ['clean'], function() {
-	oGulp.start('build');
+oGulp.task('clean_node', function() {
+	return oGulp.src(oConfig.destNode + '/*', {read: false})
+	.pipe(oPlugins.clean());
+});
+
+oGulp.task('build_node', ['build'], function() {
+	return oGulp.src(oConfig.copyNode)
+	.pipe(oGulp.dest(oConfig.destNode));
+});
+
+oGulp.task('default', ['clean', 'clean_node'], function() {
+	oGulp.start('build_node');
 });

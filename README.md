@@ -32,8 +32,36 @@ Features
 * registering the components as HTML5 custom elements in supported browsers 
 * two-way, fully recursive element wrappers for all browsers 
 
-Build & install
----------------
+Install & usage in Node
+-----------------------
+
+Install JWL locally:
+
+`npm install jwl`
+
+Globally:
+
+`npm install -g jwl`
+
+Sample usage:
+
+```javascript
+var jwl = require('jwl');
+console.log(jwl.components);
+// create a JWL component - JWL.makeClass() wrapper test
+var wnd = require('window');
+global.window = global.window || new wnd();
+var jwlParser = new jwl.Parser({
+	customFactory: 'JWL.factory'
+});
+var player = jwlParser.create({tag: 'frameplayer'});
+console.log(player.el());
+```
+
+You cab use webpack or browserify to bundle the components for the browser.
+
+Build & install from source
+---------------------------
 
 Install [Node.js](https://nodejs.org/) in your system.
 Run the following shell commands in order:
@@ -42,7 +70,7 @@ Run the following shell commands in order:
 	npm install
 	npm run make
 ```
-The release will be in 'build' folder.
+The release will be in the 'build' folder. The Node module will be in the 'build_node' folder.
 
 Downloads & user support
 ------------------------
