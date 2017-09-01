@@ -7,11 +7,11 @@ var oConfig = {
 	concatName: 'jwl.js',
 	concatDest: 'build/lib/jwl',
 	minDest: 'build/js',
-	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.8.3 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
+	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.8.4 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
 	jsdocFrom: 'src/jwl',
-	copyNode: ['build/**', '!build/Readme', '!build/index.html','!build/test.html',  '!build/js/**', '!build/docs/index.html*', '!build/tests/**',
-		 '!build/media/**', '!build/tests', '!build/js', '!build/License', '!build/media',
-		 'README.md', 'LICENSE', 'src/node/**'],
+	copyNode: ['build/**', '!build/Readme', '!build/index.html','!build/test.html', '!build/docs/index.html',
+		'!build/js/**', '!build/tests/**', '!build/media/**', '!build/tests', '!build/js', '!build/media',
+		'README.md', 'src/node/**'],
 	destNode: 'build_node'
 };
 var fRun = require('child_process').exec;
@@ -49,11 +49,20 @@ oGulp.task('clean_node', function() {
 	.pipe(oPlugins.clean());
 });
 
+var fMark = null;
+var fDone = function() {
+	setTimeout(function() {
+		if (fMark) { fMark(); }
+		fMark = null;
+	}, 0);
+};
+
 oGulp.task('build_node', ['build'], function() {
 	return oGulp.src(oConfig.copyNode)
-	.pipe(oGulp.dest(oConfig.destNode));
+	.pipe(oGulp.dest(oConfig.destNode)).on('end', fDone);
 });
 
-oGulp.task('default', ['clean', 'clean_node'], function() {
+oGulp.task('default', ['clean', 'clean_node'], function(fCall) {
+	fMark = fCall;
 	oGulp.start('build_node');
 });

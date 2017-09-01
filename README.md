@@ -46,7 +46,6 @@ Globally:
 Sample usage:
 
 ```javascript
-require('jul');
 var jwl = require('jwl');
 console.log(jwl.components);
 // create a JWL component - JWL.makeClass() wrapper test

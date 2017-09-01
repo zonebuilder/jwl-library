@@ -1,6 +1,6 @@
 {
   "name": "jwl-library-src",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "JWL - The JavaScript Widget Library",
   "main": "index.html",
   "scripts": {
@@ -28,7 +28,7 @@
     "gulp-concat": "2.x",
     "gulp-jshint": "2.x",
     "gulp-load-plugins": "1.x",
-    "gulp-strip-comments": "2.x",
+    "gulp-strip-comments": "2.4.x",
     "jsdoc2": "2.x",
     "jshint": "2.x",
     "pump": "1.x"
