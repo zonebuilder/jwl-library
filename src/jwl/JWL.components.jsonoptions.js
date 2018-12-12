@@ -1,6 +1,6 @@
 /*
-	JWL - The JavaScript Widget Library version 0.8.4
-	Copyright (c) 2016 - 2017 The Zonebuilder <zone.builder@gmx.com>
+	JWL - The JavaScript Widget Library version 0.8.5
+	Copyright (c) 2016 - 2018 The Zonebuilder <zone.builder@gmx.com>
 	http://sourceforge.net/projects/jwl-library/
 	Licenses: GNU GPL2 or later; GNU LGPLv3 or later (http://sourceforge.net/p/jwl-library/wiki/License/)
  */
@@ -129,6 +129,6 @@ jul.apply(jul.get('JWL.components.jsonoptions'), /** @lends JWL.components.jsono
 	 'lib/jwl/css/jsonoptions.css?v=0.8.4']
 });
 
-})(typeof global !== 'undefined' ? global : window, typeof module !== 'undefined' ? module : null);
+})(typeof global !== 'undefined' ? global : window, (typeof window === 'undefined' || !window.module) && typeof module !== 'undefined' ? module : null);
 
 /* end JWL.components.jsonoptions.js */

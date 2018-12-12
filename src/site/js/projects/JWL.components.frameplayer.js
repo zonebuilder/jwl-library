@@ -114,4 +114,4 @@ else if (global) {
 }
 return fInstance;
 
-})(typeof global !== 'undefined' ? global : window, typeof module !== 'undefined' ? module : null);
+})(typeof global !== 'undefined' ? global : window, (typeof window === 'undefined' || !window.module) && typeof module !== 'undefined' ? module : null);
