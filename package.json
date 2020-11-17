@@ -1,11 +1,11 @@
 {
   "name": "jwl-library-src",
-  "version": "0.8.5",
+  "version": "0.8.7",
   "description": "JWL - The JavaScript Widget Library",
   "main": "index.html",
   "scripts": {
     "make": "node_modules/.bin/gulp",
-	"test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

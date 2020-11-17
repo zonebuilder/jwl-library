@@ -7,7 +7,7 @@ var oConfig = {
 	concatName: 'jwl.js',
 	concatDest: 'build/lib/jwl',
 	minDest: 'build/js',
-	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.8.5 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
+	jsdoc: 'node "../../node_modules/jsdoc2/app/run.js" -d="../../build/docs/api" -D="noGlobal:true" -D="title:JWL 0.8.7 API Reference" -D="index:files" -D="copyright:true" -t="../jsdoc-templates/codeview" -p .',
 	jsdocFrom: 'src/jwl',
 	copyNode: ['build/**', '!build/Readme', '!build/index.html','!build/test.html', '!build/docs/index.html',
 		'!build/js/**', '!build/tests/**', '!build/media/**', '!build/tests', '!build/js', '!build/media',

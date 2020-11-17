@@ -1,6 +1,6 @@
 {
   "name": "jwl",
-  "version": "0.8.5",
+  "version": "0.8.7",
   "description": "JWL - The JavaScript Widget Library",
   "main": "./lib/jwl/jwl.js",
   "scripts": {
